@@ -25,7 +25,7 @@ namespace ConsoleApp1
                     counter = 0;
                 }
                 playerHand[i, 0] = hand[i];
-                playerHand[i, 1] = hand[secondIndex];
+                playerHand[i, 1] = Convert.ToString(handValues[secondIndex]);
                 playerHand[i, 2] = "TRUE";
                 counter++;
             }
@@ -54,7 +54,10 @@ namespace ConsoleApp1
             int card = 0;
             while (valid == false) {
                 card = r.Next(0,51);
-                IsValid(card);
+                if (IsValid(card) == true)
+                {
+                    valid = true;
+                }
             }
             String[,] Pulled = new String[1, 2];
             Pulled[0, 0] = playerHand[card, 0];
