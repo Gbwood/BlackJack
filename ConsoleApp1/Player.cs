@@ -33,6 +33,13 @@ namespace ConsoleApp1
             lost = 0;
             tied = 0;
         }
+        public double GetBet
+        {
+            get
+            {
+                return bet;
+            }
+        }
         public int count
         {
             get

@@ -43,7 +43,7 @@ namespace ConsoleApp1
                 user.AddtoHand(pulled);
                 user.AddtoHand(pulled2);
 
-                //replace with get card?
+                //check for natural 21
                 Console.WriteLine("your hand = " + pulled[0, 0] + " " + pulled2[0, 0] + " ,   Hand Value = " + user.GetHandValue());
 
                 pulled = game_deck.PullCard();
@@ -61,9 +61,12 @@ namespace ConsoleApp1
                     game3 = false;
                     user.surrender();
                     Console.WriteLine("You Surrender: $" +  "goes to Dealer");
-                    RoundOver(user);
-                    //.AddMoney();
+                    user.surrender();
+                    //RoundOver(user, dealer, game_deck);
+                    //user.AddMoney();
+                    
                     //do something else
+                    //may not be able to use same method
                 }
                 else
                 {
@@ -80,31 +83,104 @@ namespace ConsoleApp1
                             {
                                 Console.Write(user.getCard(i) + " ");
                             }
-
+                            Console.WriteLine(" , Hand Value = " + user.GetHandValue());
+                            if (user.GetHandValue() > 21)
+                            {
+                                RoundOver(user, dealer, game_deck);
+                            }
                         }
                         else if (Console.ReadLine() == "S" || Console.ReadLine() == "s")  
                         {
-                            
-                        }
-                        else
-                        {
-
-                        }
-                        
-
-
-                        game3 = false;
+                            game3 = false;
+                            RoundOver(user, dealer, game_deck);
+                        }   
                     }
+                }
+
+
+
+                //would you like to play again?
+                Console.Write("More Game (Y or N) ? : ");
+                bool valid = false;
+                while (valid == false)
+                {
+                    String text = Console.ReadLine();
+                    if (text == "Y" || text == "y" || text == "N" || text == "n")
+                    {
+                        valid = true;
+                        Console.WriteLine();
+                    }
+                    else
+                    {
+                        Console.Write("More Game (Y or N) ? : ");
+                    }
+
                 }
                 
             }
 
             
         }
-        public static void RoundOver(Player user)
+        public static void RoundOver(Player user, Player dealer, Deck game_deck)
         {
+            if (user.GetHandValue() > 21)
+            {
+                Console.WriteLine("You Bust");
+                user.SubtractMoney();
+                dealer.AddMoney();
+                
+            }
+            else
+            {
+                Console.WriteLine("Now, Dealers turn");
+                Console.Write("Dealer hand is ");
+                for (int i = 0; i <= dealer.count; i++)
+                {
+                    Console.Write(dealer.getCard(i) + " ");
+                }
+                while (dealer.GetHandValue() < 17)
+                {
+                    dealer.AddtoHand(game_deck.PullCard());
+                    Console.Write("Dealer hand is ");
+                    for (int i = 0; i <= dealer.count; i++)
+                    {
+                        Console.Write(dealer.getCard(i) + " ");
+                    }
+                    Console.WriteLine();
+                }
+                if (dealer.GetHandValue() > 21)
+                {
+                    Console.WriteLine("Dealer Busts");
+                    user.Won++;
+                    user.AddMoney();
+                    dealer.SubtractMoney();
+                }
+                else if (dealer.GetHandValue() == user.GetHandValue())
+                {
+                    Console.WriteLine("It's a standoff");
+                    user.Tied++;
+                }
+                else if (dealer.GetHandValue() > user.GetHandValue())
+                {
+                    Console.WriteLine("Dealer won and Got $" + user.GetBet + " from user");
+                    user.Lost++;
+                    dealer.AddMoney();
+                    user.SubtractMoney();
+                }
+                else
+                {
+                    Console.WriteLine("You won and got $" + user.GetBet + " from Dealer");
+                    user.AddMoney();
+                    dealer.SubtractMoney();
+                    user.Won++;
+                }
+                
+            }
+
+
+
             Console.WriteLine("You have won " + user.Won + " times, Lost " + user.Lost + " times, and tied " + user.Tied + "times");
-            Console.WriteLine("You have " + user.MoneyValue);
+            Console.WriteLine("You have : $" + user.MoneyValue);
         }
 
     }
