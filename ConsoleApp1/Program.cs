@@ -55,8 +55,8 @@ namespace ConsoleApp1
 
 
                 Console.Write("Do you want to surrender (Y or N) ? : ");
-
-                if (Console.ReadLine() == "y" || Console.ReadLine() == "Y")
+                String temp = Console.ReadLine();
+                if (temp == "y" || temp == "Y")
                 {
                     game3 = false;
                     user.surrender();
@@ -69,12 +69,28 @@ namespace ConsoleApp1
                 {
                     while (game3 == true)
                     {
+                        Console.Write("Would you like to HIT or STAY (H or S) ? " );
+                        temp = Console.ReadLine();
+                        if (temp == "H" || temp == "h")
+                        {
+                            pulled = game_deck.PullCard();
+                            user.AddtoHand(pulled);
+                            Console.Write("Your hand is ");
+                            for (int i = 0; i <= user.count; i++)
+                            {
+                                Console.Write(user.getCard(i) + " ");
+                            }
 
-                        //if surrender game over and lose bet
-                        //if continue ask to hit or stay
+                        }
+                        else if (Console.ReadLine() == "S" || Console.ReadLine() == "s")  
+                        {
+                            
+                        }
+                        else
+                        {
 
-                        //hit or stay
-                        //if stay game3 = false;
+                        }
+                        
 
 
                         game3 = false;

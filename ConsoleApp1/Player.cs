@@ -33,6 +33,13 @@ namespace ConsoleApp1
             lost = 0;
             tied = 0;
         }
+        public int count
+        {
+            get
+            {
+                return nextIndex;
+            }
+        }
          public int Won
         {
             get
@@ -113,12 +120,7 @@ namespace ConsoleApp1
         {
             int value = 0;
             int AceCounter = 0;
-            
-            //array and indexer to keep track of amount of aces?
 
-
-           
-            //if value over 21 swap 11 for a 1
             for (int i = 0; i <= nextIndex - 1; i++)
             {
                 if (hand[i,1] == "11")
@@ -148,15 +150,15 @@ namespace ConsoleApp1
 
         public String getCard(int index)
         {
-
-
-            return null;
+            return hand[index,0];
         }
 
         public void surrender()
         {
-            //not done
-            //only lose half the bet
+            
+            money -= (bet / 2);
+            bet = 0;
+           
         }
     }
 }
