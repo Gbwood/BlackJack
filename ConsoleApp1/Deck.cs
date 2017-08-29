@@ -52,11 +52,21 @@ namespace ConsoleApp1
             Random r = new Random();
             bool valid = false;
             int card = 0;
+            int[] cards = new int[52];
+
             while (valid == false) {
                 card = r.Next(0,51);
+                
                 if (IsValid(card) == true)
                 {
                     valid = true;
+                }
+                else
+                {
+                    //for (int i = 0; i < 52; i++)
+                    //{
+                      //  if ()
+                //}
                 }
             }
             String[,] Pulled = new String[1, 2];

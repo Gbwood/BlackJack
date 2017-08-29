@@ -20,19 +20,26 @@ namespace ConsoleApp1
             Deck game_deck = new Deck();
             Player user = new Player(false);
             Player dealer = new Player(true);
-
+            
 
             while (game2 == true)
             {
                 bool game3 = true;
+                user.EmptyHand();
+                dealer.EmptyHand();
                 Console.WriteLine("============= New Game =============");
                 Console.WriteLine("You have : " + user.MoneyValue);
                 Console.Write("How much do you bet : ");
 
 
-                //error checking add here
+                //bet needs to be a double
                 //check value > 1
-                int bet = Convert.ToInt32(Console.ReadLine());
+                double bet = Convert.ToDouble(Console.ReadLine());
+                while (bet <= 0)
+                {
+                    Console.Write("How much do you bet : ");
+                    bet = Convert.ToInt32(Console.ReadLine());
+                }
                 user.Bet(bet);
                 dealer.Bet(bet);
 
@@ -43,7 +50,7 @@ namespace ConsoleApp1
                 user.AddtoHand(pulled);
                 user.AddtoHand(pulled2);
 
-                //check for natural 21
+               
                 Console.WriteLine("your hand = " + pulled[0, 0] + " " + pulled2[0, 0] + " ,   Hand Value = " + user.GetHandValue());
 
                 pulled = game_deck.PullCard();
@@ -53,69 +60,90 @@ namespace ConsoleApp1
 
                 Console.WriteLine("Dealer's hand = " + pulled[0, 0] + " XX");
 
-
-                Console.Write("Do you want to surrender (Y or N) ? : ");
-                String temp = Console.ReadLine();
-                if (temp == "y" || temp == "Y")
+                //check for natural21
+                bool Natural21 = false;
+                if (user.GetHandValue() == 21)
                 {
-                    game3 = false;
-                    user.surrender();
-                    Console.WriteLine("You Surrender: $" +  "goes to Dealer");
-                    user.surrender();
-                    //RoundOver(user, dealer, game_deck);
-                    //user.AddMoney();
-                    
-                    //do something else
-                    //may not be able to use same method
+                    double num = (2.5 * user.GetBet);
+                    Console.WriteLine("You got natural21; $" + num + " goes to you from the dealer");
+                    user.TwentyOne();
+                    dealer.DealerNatural21();
+                    Natural21 = true;
+                    user.Won++;
+                    Console.WriteLine("You have won " + user.Won + " times, Lost " + user.Lost + " times, and tied " + user.Tied + "times");
+                    Console.WriteLine("You have : $" + user.MoneyValue);
                 }
-                else
+                
+                if (Natural21 == false)
                 {
-                    while (game3 == true)
+                    //Surrender?
+                    Console.Write("Do you want to surrender (Y or N) ? : ");
+                    //error checking needs added
+                    String temp = Console.ReadLine();
+                    while (temp != "y" && temp != "Y" && temp != "n" && temp != "N")
                     {
-                        Console.Write("Would you like to HIT or STAY (H or S) ? " );
+                        Console.Write("Do you want to surrender (Y or N) ? : ");
                         temp = Console.ReadLine();
-                        if (temp == "H" || temp == "h")
-                        {
-                            pulled = game_deck.PullCard();
-                            user.AddtoHand(pulled);
-                            Console.Write("Your hand is ");
-                            for (int i = 0; i <= user.count; i++)
-                            {
-                                Console.Write(user.getCard(i) + " ");
-                            }
-                            Console.WriteLine(" , Hand Value = " + user.GetHandValue());
-                            if (user.GetHandValue() > 21)
-                            {
-                                RoundOver(user, dealer, game_deck);
-                            }
-                        }
-                        else if (Console.ReadLine() == "S" || Console.ReadLine() == "s")  
-                        {
-                            game3 = false;
-                            RoundOver(user, dealer, game_deck);
-                        }   
                     }
-                }
-
-
-
-                //would you like to play again?
-                Console.Write("More Game (Y or N) ? : ");
-                bool valid = false;
-                while (valid == false)
-                {
-                    String text = Console.ReadLine();
-                    if (text == "Y" || text == "y" || text == "N" || text == "n")
+                    if (temp == "y" || temp == "Y")
                     {
-                        valid = true;
-                        Console.WriteLine();
+                        game3 = false;
+                        user.surrender();
+                        Console.WriteLine("You Surrender: $" + "goes to Dealer");
+                        user.surrender();
+                        dealer.DealerSurrender();
                     }
                     else
                     {
-                        Console.Write("More Game (Y or N) ? : ");
+                        while (game3 == true)
+                        {
+                            Console.Write("Would you like to HIT or STAY (H or S) ? ");
+                            temp = Console.ReadLine();
+                            if (temp == "H" || temp == "h")
+                            {
+                                pulled = game_deck.PullCard();
+                                user.AddtoHand(pulled);
+                                Console.Write("Your hand is ");
+                                for (int i = 0; i <= user.count; i++)
+                                {
+                                    Console.Write(user.getCard(i) + " ");
+                                }
+                                Console.WriteLine(" , Hand Value = " + user.GetHandValue());
+                                if (user.GetHandValue() > 21)
+                                {
+                                    RoundOver(user, dealer, game_deck);
+                                    game3 = false;
+                                }
+                            }
+                            else if (temp == "S" || temp == "s")
+                            {
+                                game3 = false;
+                                RoundOver(user, dealer, game_deck);
+                            }
+                        }
                     }
 
+
+
+                    //would you like to play again?
+                    Console.Write("More Game (Y or N) ? : ");
+                    bool valid = false;
+                    while (valid == false)
+                    {
+                        String text = Console.ReadLine();
+                        if (text == "Y" || text == "y" || text == "N" || text == "n")
+                        {
+                            valid = true;
+                            Console.WriteLine();
+                        }
+                        else
+                        {
+                            Console.Write("More Game (Y or N) ? : ");
+                        }
+
+                    }
                 }
+                
                 
             }
 
@@ -128,6 +156,7 @@ namespace ConsoleApp1
                 Console.WriteLine("You Bust");
                 user.SubtractMoney();
                 dealer.AddMoney();
+                user.Lost++;
                 
             }
             else
@@ -138,6 +167,7 @@ namespace ConsoleApp1
                 {
                     Console.Write(dealer.getCard(i) + " ");
                 }
+                Console.WriteLine(" , Hand Value : " + dealer.GetHandValue());
                 while (dealer.GetHandValue() < 17)
                 {
                     dealer.AddtoHand(game_deck.PullCard());
@@ -146,7 +176,7 @@ namespace ConsoleApp1
                     {
                         Console.Write(dealer.getCard(i) + " ");
                     }
-                    Console.WriteLine();
+                    Console.WriteLine(" , Hand Value : " + dealer.GetHandValue());
                 }
                 if (dealer.GetHandValue() > 21)
                 {
@@ -177,11 +207,10 @@ namespace ConsoleApp1
                 
             }
 
-
-
-            Console.WriteLine("You have won " + user.Won + " times, Lost " + user.Lost + " times, and tied " + user.Tied + "times");
+            Console.WriteLine("You have won " + user.Won + " times, Lost " + user.Lost + " times, and tied " + user.Tied + " times");
             Console.WriteLine("You have : $" + user.MoneyValue);
         }
-
+        //can't bet more than you have
+        //infite loop when cards run out
     }
 }

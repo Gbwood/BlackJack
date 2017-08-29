@@ -93,7 +93,7 @@ namespace ConsoleApp1
 
 
 
-        public void Bet(int value)
+        public void Bet(double value)
         {
             bet = value;
         }
@@ -133,7 +133,7 @@ namespace ConsoleApp1
                 if (hand[i,1] == "11")
                 {
                     AceCounter++;
-                    //add to array?
+                    
                 }
                 value += Convert.ToInt32(hand[i, 1]);
             }
@@ -166,6 +166,30 @@ namespace ConsoleApp1
             money -= (bet / 2);
             bet = 0;
            
+        }
+
+
+        public void DealerSurrender()
+        {
+            money += (bet / 2);
+            bet = 0;
+        }
+
+        public void DealerNatural21()
+        {
+            money -= (bet * 2.5);
+            bet = 0;
+        }
+
+        public void EmptyHand()
+        {
+            
+            for (int i = 0; i < nextIndex; i++)
+            {
+                hand[i, 0] = null;
+                hand[i, 1] = null;
+            }
+            nextIndex = 0;
         }
     }
 }
