@@ -63,6 +63,7 @@ namespace ConsoleApp1
                 }
                 else
                 {
+                    //we need to check if we've pulled all the cards in the deck so we don't get caught in an infinite loop
                     //for (int i = 0; i < 52; i++)
                     //{
                       //  if ()
