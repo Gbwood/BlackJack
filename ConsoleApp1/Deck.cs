@@ -4,77 +4,92 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ConsoleApp1
+namespace BlackJack_CodeQuality
 {
     class Deck
     {
-        String[] hand = { "2S", "2H", "2D", "2C", "3S", "3H", "3D", "3C", "4S", "4H", "4D", "4C", "5S", "5H", "5D", "5C", "6S", "6H", "6D", "6C", "7S", "7H", "7D", "7C", "8S", "8H", "8D", "8C",
-        "9S", "9H", "9D", "9C","10S", "10H", "10D", "10C","JS", "JH", "JD", "JC","QS", "QH", "QD", "QC","KS", "KH", "KD", "KC","AS", "AH", "AD", "AC"};
-        int[] handValues = { 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 11 };
-        String[,] playerHand;
+        private Card[] deck;
+        private int topCardIndex;
+
+        private Random r = new Random();
+
+        //• Card[topCardIndex+1]~Card[51]: point to null (this is a requirement)
+
         public Deck()
         {
-            int secondIndex = 0;
-            int counter = 0;
-            playerHand = new String[hand.Length, 3];
-            for (int i = 0; i < hand.Length; i++)
-            {
-                if (counter == 4)
+            deck = new Card[52];
+            Char[] suits = { 'S', 'H', 'D', 'C' };
+            int j = 0;
+                for (int i = 0; i < 13; i++)
                 {
-                    secondIndex++;
-                    counter = 0;
+                    for (int s = 0; s < 4; s++)
+                    {
+                    deck[j] = new Card(i + 2, suits[s]);
+                    j++;
+                    }
                 }
-                playerHand[i, 0] = hand[i];
-                playerHand[i, 1] = Convert.ToString(handValues[secondIndex]);
-                playerHand[i, 2] = "TRUE";
-                counter++;
-            }
-         }
+            topCardIndex = 51;
+        }
 
-        public bool IsValid(int card)
+        // http://rosettacode.org/wiki/Knuth_shuffle
+        public void Shuffle()
         {
-            if (playerHand[card, 2] == "FALSE")
+            for (int i = 0; i < 52; i++)
             {
-                return false;
+                Card temp = deck[i];
+                int SwapIndex = r.Next(51);
+                deck[i] = deck[SwapIndex];
+                deck[SwapIndex] = temp;
             }
-            else
-            {
-                return true;
-            }
-
-            
         }
 
 
-
-        public String[,] PullCard()
+        public Card Draw(string CardNumberFollowedByPlayer)
         {
-            Random r = new Random();
-            bool valid = false;
-            int card = 0;
-            int[] cards = new int[52];
-
-            while (valid == false) {
-                card = r.Next(0,51);
-                
-                if (IsValid(card) == true)
+            Card pulledCard;
+#if DEBUG
+            //first index of CardNumberFollowedByPlayer contains the nth card that is being chose is to the player
+            //the rest of the string represents who is calling the method (dealers or Customers)
+            while (true)
+            {
+                Console.Write("Input " + CardNumberFollowedByPlayer[0] + " card for " + CardNumberFollowedByPlayer.Substring(1) + " (3H, AD, TC, etc. or XX to draw from deck) : ");
+                string card = Console.ReadLine().ToUpper();
+                if (card == "XX")
                 {
-                    valid = true;
+                    pulledCard = deck[topCardIndex];
+                    deck[topCardIndex] = null;
+                    topCardIndex--;
+                    break;
                 }
                 else
                 {
-                    //we need to check if we've pulled all the cards in the deck so we don't get caught in an infinite loop
-                    //for (int i = 0; i < 52; i++)
-                    //{
-                      //  if ()
-                //}
+                    for (int i = topCardIndex; i >=0; i--)
+                    {
+                        if (deck[i].ToString() == card)
+                        {
+                            pulledCard = deck[i];
+                            deck[i] = deck[topCardIndex];
+                            deck[topCardIndex] = null;
+                            topCardIndex--;
+                            return pulledCard;
+                        }
+                    }
                 }
             }
-            String[,] Pulled = new String[1, 2];
-            Pulled[0, 0] = playerHand[card, 0];
-            Pulled[0, 1] = playerHand[card, 1];
-            playerHand[card, 2] = "FALSE";
-            return Pulled;
+
+#else
+            pulledCard = deck[topCardIndex];
+            deck[topCardIndex] = null;
+            topCardIndex--;
+#endif
+            return pulledCard;
         }
+        //returns cards back into the deck and adjust the index
+        public void ReturnCard(Card card)
+        {
+            topCardIndex++;
+            deck[topCardIndex] = card;
+        }
+
     }
 }
